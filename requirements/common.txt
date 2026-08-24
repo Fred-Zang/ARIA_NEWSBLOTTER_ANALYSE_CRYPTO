@@ -1,5 +1,5 @@
 # Versions contrôlées pour la V1 publique (Python 3.12).
-numpy==2.3.5
+numpy==2.5.2
 pandas==2.3.3
 requests==2.34.2
 python-dotenv==1.2.3
