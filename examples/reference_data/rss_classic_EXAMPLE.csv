@@ -1,0 +1,2 @@
+URL_concerned,link_RSS_url,last_datetime_sav,sav_path_news,sav_name_news,balise_last_build_date,balise_item,balise_title,balise_link,balise_datetime,balise_text,start_to_clear
+https://news.example,https://news.example/feed.xml,2026-01-01 00:00:00,data_news/example,news_example,lastBuildDate,item,title,link,pubDate,description,

@@ -1,0 +1,15 @@
+.git
+.github
+.env
+.env.*
+runtime
+docs
+examples
+**/__pycache__
+**/*.pyc
+*.log
+*.xlsx
+*.xls
+*.pbix
+README.md
+SECURITY.md

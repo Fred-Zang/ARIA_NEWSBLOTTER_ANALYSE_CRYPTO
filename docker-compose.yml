@@ -1,0 +1,110 @@
+services:
+  newsblotter:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.newsblotter
+    restart: unless-stopped
+    init: true
+    user: "${ARIA_DOCKER_UID:-1000}:${ARIA_DOCKER_GID:-1000}"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+    environment:
+      ARIA_API_KEY: "${ARIA_API_KEY:-}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      ARIA_API_BASE_URL: "${ARIA_API_BASE_URL:-https://example.invalid}"
+      ARIA_WEB_BASE_URL: "${ARIA_WEB_BASE_URL:-https://example.invalid}"
+      ARIA_API_KEY_HEADER: "${ARIA_API_KEY_HEADER:-X-Api-Key}"
+      ARIA_PLATFORM_SOURCE_DOMAIN: "${ARIA_PLATFORM_SOURCE_DOMAIN:-platform.example}"
+      ARIA_HOTNEWS_EXCLUDED_SOURCE_TOKENS: "${ARIA_HOTNEWS_EXCLUDED_SOURCE_TOKENS:-}"
+      ARIA_SOURCE_DOMAIN_ALIASES: "${ARIA_SOURCE_DOMAIN_ALIASES:-}"
+      OPENAI_MODEL: "${OPENAI_MODEL:-gpt-4o-mini}"
+      OPENAI_TIMEOUT_SECONDS: "${OPENAI_TIMEOUT_SECONDS:-60}"
+      OPENAI_MAX_RETRIES: "${OPENAI_MAX_RETRIES:-2}"
+      ARIA_HTTP_TIMEOUT_SECONDS: "${ARIA_HTTP_TIMEOUT_SECONDS:-15}"
+      ARIA_MAX_HTTP_RESPONSE_BYTES: "${ARIA_MAX_HTTP_RESPONSE_BYTES:-10485760}"
+      ARIA_MAX_REDIRECTS: "${ARIA_MAX_REDIRECTS:-5}"
+      ARIA_ALLOW_PRIVATE_API_HOSTS: "${ARIA_ALLOW_PRIVATE_API_HOSTS:-false}"
+      ARIA_NEWS_CYCLE_SECONDS: "${ARIA_NEWS_CYCLE_SECONDS:-300}"
+      ARIA_SUBPROCESS_TIMEOUT_SECONDS: "${ARIA_SUBPROCESS_TIMEOUT_SECONDS:-1800}"
+      ARIA_MARKET_RUN_AFTER_UTC_HOUR: "${ARIA_MARKET_RUN_AFTER_UTC_HOUR:-7}"
+      ARIA_NEWS_API_PATH: "${ARIA_NEWS_API_PATH:-/api/v1/news}"
+      ARIA_WORDLIST_API_PATH: "${ARIA_WORDLIST_API_PATH:-/api/v1/news/wordlist}"
+      ARIA_LATEST_NEWS_API_PATH: "${ARIA_LATEST_NEWS_API_PATH:-/api/v1/news/latest}"
+      ARIA_ADD_NEWS_API_PATH: "${ARIA_ADD_NEWS_API_PATH:-/api/v1/news/add}"
+      ARIA_UPDATE_NEWS_API_PATH: "${ARIA_UPDATE_NEWS_API_PATH:-/api/v1/news/update}"
+      ARIA_UPDATE_FULL_TEXT_API_PATH: "${ARIA_UPDATE_FULL_TEXT_API_PATH:-/api/v1/news/update/full-text}"
+      ARIA_UPDATE_LLM_STATUS_API_PATH: "${ARIA_UPDATE_LLM_STATUS_API_PATH:-/api/v1/news/update/llm-summary}"
+      ARIA_SOURCE_SCORE_PUSH_API_PATH: "${ARIA_SOURCE_SCORE_PUSH_API_PATH:-/api/v1/source-score/push}"
+      COINMARKETCAP_EXCHANGES_URL: "${COINMARKETCAP_EXCHANGES_URL:-https://coinmarketcap.com/rankings/exchanges/}"
+    volumes:
+      - ./runtime/data_main:/app/data_main:rw
+      - ./runtime/data_news:/app/data_news:rw
+      - ./runtime/json_rss_to_send:/app/json_rss_to_send:rw
+      - ./runtime/data_logs:/app/data_logs:rw
+      - ./runtime/RESUM_Hot_News:/app/RESUM_Hot_News:rw
+      - ./runtime/data_coinmarketcap:/app/data_coinmarketcap:rw
+
+  hotnews-daily-brief:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.hotnews
+    restart: unless-stopped
+    init: true
+    user: "${ARIA_DOCKER_UID:-1000}:${ARIA_DOCKER_GID:-1000}"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    environment:
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      OPENAI_MODEL: "${OPENAI_MODEL:-gpt-4o-mini}"
+      OPENAI_TIMEOUT_SECONDS: "${OPENAI_TIMEOUT_SECONDS:-60}"
+      OPENAI_MAX_RETRIES: "${OPENAI_MAX_RETRIES:-2}"
+      ARIA_NEWS_CYCLE_SECONDS: "${ARIA_NEWS_CYCLE_SECONDS:-300}"
+      ARIA_DAILY_BRIEF_AFTER_UTC_HOUR: "${ARIA_DAILY_BRIEF_AFTER_UTC_HOUR:-7}"
+      ARIA_DAILY_BRIEF_AFTER_UTC_MINUTE: "${ARIA_DAILY_BRIEF_AFTER_UTC_MINUTE:-10}"
+    volumes:
+      - ./runtime/RESUM_Hot_News:/app/RESUM_Hot_News:rw
+
+  blockchain-explorer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.blockchain
+    restart: unless-stopped
+    init: true
+    user: "${ARIA_DOCKER_UID:-1000}:${ARIA_DOCKER_GID:-1000}"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    environment:
+      ARIA_API_KEY: "${ARIA_API_KEY:-}"
+      ARIA_WALLET_API_KEY: "${ARIA_WALLET_API_KEY:-}"
+      ETHERSCAN_API_KEY: "${ETHERSCAN_API_KEY:-}"
+      ARIA_API_BASE_URL: "${ARIA_API_BASE_URL:-https://example.invalid}"
+      ARIA_API_KEY_HEADER: "${ARIA_API_KEY_HEADER:-X-Api-Key}"
+      ARIA_WALLET_API_KEY_HEADER: "${ARIA_WALLET_API_KEY_HEADER:-X-Api-Key}"
+      ARIA_ALLOW_PRIVATE_API_HOSTS: "${ARIA_ALLOW_PRIVATE_API_HOSTS:-false}"
+      ARIA_HTTP_TIMEOUT_SECONDS: "${ARIA_HTTP_TIMEOUT_SECONDS:-15}"
+      ARIA_MAX_HTTP_RESPONSE_BYTES: "${ARIA_MAX_HTTP_RESPONSE_BYTES:-10485760}"
+      ARIA_MAX_REDIRECTS: "${ARIA_MAX_REDIRECTS:-5}"
+      ARIA_COINLIST_API_PATH: "${ARIA_COINLIST_API_PATH:-/api/v1/coinlist}"
+      ARIA_WALLET_HOLDERS_API_PATH: "${ARIA_WALLET_HOLDERS_API_PATH:-/api/v1/wallet-holders}"
+      ARIA_WALLET_HOLDERS_PUSH_API_PATH: "${ARIA_WALLET_HOLDERS_PUSH_API_PATH:-/api/v1/wallet-holders/push}"
+      ETHERSCAN_API_URL: "${ETHERSCAN_API_URL:-https://api.etherscan.io/api}"
+      ARIA_BLOCKCHAIN_RUN_AFTER_UTC_HOUR: "${ARIA_BLOCKCHAIN_RUN_AFTER_UTC_HOUR:-3}"
+      ARIA_BLOCKCHAIN_POLL_SECONDS: "${ARIA_BLOCKCHAIN_POLL_SECONDS:-60}"
+      ARIA_BLOCKCHAIN_RETRY_SECONDS: "${ARIA_BLOCKCHAIN_RETRY_SECONDS:-900}"
+    volumes:
+      - ./runtime/data_scan_explorer_tokens:/app/data_scan_explorer_tokens:rw
