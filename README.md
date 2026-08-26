@@ -3,6 +3,9 @@
 > **V1 publique, anonymisée — démonstration technique / portfolio.**  
 > Ce dépôt présente une version nettoyée et durcie des workers Python développés pour la plateforme ARIA. Il ne contient pas les secrets, routes de production, référentiels internes, catalogues complets de sources, historiques de news, logs de production ni données applicatives.
 
+🌐 **Présentation visuelle du projet :**  
+https://zang-iaconsulting.com/projects/aria-news.html
+
 ## ✨ En un coup d’œil
 
 | Repère | Description |
